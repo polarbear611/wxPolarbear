@@ -15,7 +15,11 @@ class Handle(object):
 		try:
 			webData = web.data()  #.decode('utf8')
 			print "Handle Post Webdata is ", webData
-			recMsg = receive.parse_xml(webData)
+            try:
+                recMsg = receive.parse_xml(webData)
+            except Exception, Argument:
+                print 'parse_xml failed'
+                print Argument
 			if isinstance(recMsg, receive.Msg):
 				toUser = recMsg.FromUserName
 				fromUser = recMsg.ToUserName

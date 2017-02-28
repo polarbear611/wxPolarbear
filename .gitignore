@@ -6,6 +6,9 @@ __pycache__/
 #xml files
 *.xml
 
+#swap files
+*.swp
+
 # C extensions
 *.so
 
