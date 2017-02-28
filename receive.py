@@ -29,14 +29,14 @@ class TextMsg(Msg):
 		self.Content = xmlData.find('Content')
 	def reply(self):
 		ask = self.Content.text
-		print ask
+		#print ask
 		if ask == u"背诗":
 			return "背哪首诗呢"
 		elif ask == u"随便":
 			#return "劝君更尽一杯酒，西出阳关无故人"
 			#return self.randomPoem()
 			poem = self.randomPoem()
-			print poem, type(poem)
+			#print poem, type(poem)
 			return poem.encode('utf8')
 		elif ask == u"再来一首" or ask == u"再来":
 			return self.randomPoem().encode('utf8')
@@ -68,10 +68,10 @@ class TextMsg(Msg):
 				sql = "select content from poem where \
 					id = %s"
 				poemId = random.randint(161, 460)
-				print poemId
+				#print poemId
 				cursor.execute(sql, poemId)
 				poem = cursor.fetchone()[0]	
-				print poem
+				#print poem
 				#connection.commit()
 		except Exception as e:
 			print repr(e)
