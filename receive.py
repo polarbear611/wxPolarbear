@@ -32,6 +32,8 @@ class TextMsg(Msg):
 		#print ask
 		if ask == u"背诗":
 			return "背哪首诗呢"
+		elif ask == 'Hi':
+			return "Hi,我是会背诗的机器人小歪"
 		elif ask == u"随便":
 			#return "劝君更尽一杯酒，西出阳关无故人"
 			#return self.randomPoem()

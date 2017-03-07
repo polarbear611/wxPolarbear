@@ -14,12 +14,12 @@ class Handle(object):
 	def POST(self):
 		try:
 			webData = web.data()  #.decode('utf8')
-			print "Handle Post Webdata is ", webData
-            try:
-                recMsg = receive.parse_xml(webData)
-            except Exception, Argument:
-                print 'parse_xml failed'
-                print Argument
+			#print "Handle Post Webdata is ", webData
+			try:
+				recMsg = receive.parse_xml(webData)
+			except Exception, Argument:
+				print 'parse_xml failed'
+				print Argument
 			if isinstance(recMsg, receive.Msg):
 				toUser = recMsg.FromUserName
 				fromUser = recMsg.ToUserName
