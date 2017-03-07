@@ -6,6 +6,7 @@ import receive
 import reply
 import web
 import sys, os
+import time
 
 abspath = os.path.dirname(__file__)
 sys.path.append(abspath) 
@@ -13,19 +14,16 @@ os.chdir(abspath)
 class Handle(object):
 	def POST(self):
 		try:
-			webData = web.data()  #.decode('utf8')
-			#print "Handle Post Webdata is ", webData
-			try:
-				recMsg = receive.parse_xml(webData)
-			except Exception, Argument:
-				print 'parse_xml failed'
-				print Argument
+			webData = web.data()  
+			recMsg = receive.parse_xml(webData)
 			if isinstance(recMsg, receive.Msg):
 				toUser = recMsg.FromUserName
 				fromUser = recMsg.ToUserName
 				if recMsg.MsgType == 'text':
-					#content = "该睡觉觉啦，小狗狗"
 					content = recMsg.reply()
+					render = web.template.render('templates/')
+					return render.reply_text(fromUser, \
+						toUser, int(time.time()), content)
 					replyMsg = reply.TextMsg(toUser, \
 						fromUser, content)
 					return replyMsg.send()
@@ -66,3 +64,25 @@ class Handle(object):
 				return ""
 		except Exception, Argument:
 			return Argument
+if __name__ == "__main__":
+	import xml.etree.ElementTree as ET
+	webData = """
+	<xml>
+	<ToUserName><![CDATA[toUser]]></ToUserName>
+	<FromUserName><![CDATA[fromUser]]></FromUserName>
+	<CreateTime>1348831860</CreateTime>
+	<MsgType><![CDATA[text]]></MsgType>
+	<Content><![CDATA[{recv}]]></Content>
+	<MsgId>1234567890123456</MsgId>
+	</xml>
+	"""
+	handle = Handle()
+	ask = raw_input("你想跟小歪说些什么呢？\n")
+	while(ask):
+		answerXml = handle.POST(webData.format(recv = ask))
+		print answerXml
+		print 
+		ask = raw_input("你想跟小歪说些什么呢？\n")
+
+	print "再见"
+

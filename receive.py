@@ -2,7 +2,7 @@
 #filename: receive.py
 
 import xml.etree.ElementTree as ET
-import pymysql
+from db_poem import DbPoem
 import random
 
 def parse_xml(web_data):
@@ -28,33 +28,33 @@ class TextMsg(Msg):
 		Msg.__init__(self, xmlData)
 		self.Content = xmlData.find('Content')
 	def reply(self):
-		ask = self.Content.text
+		dbPoem = DbPoem()
+		ask = self.Content.text.encode('utf8')
+		answer = ''
 		#print ask
-		if ask == u"背诗":
-			return "背哪首诗呢"
+		if ask == "背诗":
+			answer += "背哪首诗呢"
 		elif ask == 'Hi':
-			return "Hi,我是会背诗的机器人小歪"
-		elif ask == u"随便":
-			#return "劝君更尽一杯酒，西出阳关无故人"
-			#return self.randomPoem()
-			poem = self.randomPoem()
-			#print poem, type(poem)
-			return poem.encode('utf8')
-		elif ask == u"再来一首" or ask == u"再来":
-			return self.randomPoem().encode('utf8')
-		elif ask == u"小熊":
-			return "你好，我是小歪"
-		elif ask == u"小歪":
-			return "我是小歪，小歪给你背首诗吧。" + \
-				 '\n\n' + self.randomPoem().encode('utf8')
-		elif ask == u"趴下":
-			return "小歪是一只顶天立地的大白熊哦"
+			answer += "Hi,我是会背诗的机器人小歪"
+		elif ask == "再来一首" or ask == "再来" or ask == "随便":
+			answer += '\n'.join(dbPoem.poemRandom())
+		elif ask == "小熊":
+			answer += "你好，我是小歪"
+		elif ask == "小歪":
+			answer += "我是小歪，我会背诗哦\n"
+			answer += '\n'.join(dbPoem.poemRandom())
+		elif ask == "趴下":
+			answer += "小歪是一只顶天立地的大白熊哦"
+		elif ask in dbPoem.poemAuthors():
+			answer += "那我就背一首%s的诗吧\n" % ask
+			answer += '\n'.join(dbPoem.poemByAuthor(ask))
+		elif ask in dbPoem.poemTitles():
+			answer += "你是要听我背《%s》吗\n" % ask
+			answer += '\n'.join(dbPoem.poemByTitle(ask))
 		else:
-			#return "目前，小北极熊还只会背诗哦"
-			return "你说什么，我听不懂，还是背诗吧" + '\n\n' \
-				+ self.randomPoem().encode('utf8')
-	def poem(title):
-		pass
+			answer += "你说什么，我听不懂，还是背诗吧\n"  
+			answer += '\n'.join(dbPoem.poemRandom())
+		return answer
 	
 	def randomPoem(self):
 		configs = {
@@ -70,11 +70,8 @@ class TextMsg(Msg):
 				sql = "select content from poem where \
 					id = %s"
 				poemId = random.randint(161, 460)
-				#print poemId
 				cursor.execute(sql, poemId)
 				poem = cursor.fetchone()[0]	
-				#print poem
-				#connection.commit()
 		except Exception as e:
 			print repr(e)
 		finally:
